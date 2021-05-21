@@ -1,0 +1,9 @@
+#!/usr/bin/env node
+
+const path = require("path");
+const prevCwd = process.cwd();
+process.chdir(path.resolve(__dirname, "../"));
+require("esbuild-runner/register");
+process.chdir(prevCwd);
+
+require("../src/" + process.argv[2] + ".ts");
