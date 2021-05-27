@@ -7,7 +7,9 @@ import chalk from "chalk";
 
 export interface $ {
   (pieces: TemplateStringsArray, ...args: any[]): Promise<ProcessOutput>;
-  verbose: boolean;
+  verboseCommand: boolean;
+  verboseResult: boolean;
+  verboseError: boolean;
   shell: string;
   cwd: string;
   prefix: string;
@@ -43,7 +45,7 @@ export const $: $ = function $(
     cmd += s + pieces[++i];
   }
 
-  if ($.verbose) {
+  if ($.verboseCommand) {
     console.log("$", colorize(cmd));
   }
 
@@ -60,7 +62,7 @@ export const $: $ = function $(
       combined = "";
     if (child.stdout) {
       child.stdout.on("data", (data) => {
-        if ($.verbose) {
+        if ($.verboseResult) {
           process.stdout.write(data);
         }
         stdout += data;
@@ -69,7 +71,7 @@ export const $: $ = function $(
     }
     if (child.stderr) {
       child.stderr.on("data", (data) => {
-        if ($.verbose) {
+        if ($.verboseError) {
           process.stderr.write(data);
         }
         stderr += data;
@@ -87,12 +89,14 @@ export const $: $ = function $(
 };
 
 $.shell = undefined as any;
-$.verbose = true;
+$.verboseCommand = true;
+$.verboseError = true;
+$.verboseResult = false;
 $.prefix = "";
 $.cwd = undefined as any;
 
 export function cd(path: string) {
-  if ($.verbose) {
+  if ($.verboseCommand) {
     console.log("$", colorize(`cd ${path}`));
   }
   if (!existsSync(path)) {
@@ -129,7 +133,7 @@ export async function question(
 }
 
 export async function fetch(url: string, init?: any) {
-  if ($.verbose) {
+  if ($.verboseCommand) {
     if (typeof init !== "undefined") {
       console.log("$", colorize(`fetch ${url}`), init);
     } else {
