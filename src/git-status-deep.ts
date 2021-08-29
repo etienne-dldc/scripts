@@ -17,18 +17,25 @@ import { $, ProcessOutput } from "./utils/zx";
     $.verboseCommand = false;
     $.verboseResult = false;
     try {
-      const res = (await $`bash ${gitBranchStatusPath}`).toString();
-      const isSync = res.match(
+      const branchStatus = (await $`bash ${gitBranchStatusPath}`).toString();
+      const changes = (await $`git status -s`).toString();
+      const noChanges = changes.trim().length === 0;
+      const isSync = branchStatus.match(
         /All tracking branches are synchronized with their upstreams/
       );
-      if (isSync) {
+      if (isSync && noChanges) {
         console.log(chalk.green(`✓ ${folder}`));
       } else {
         console.log(chalk.red(`✗ ${folder}`));
-        console.log(res);
+        if (!noChanges) {
+          console.log(changes);
+        }
+        if (!isSync) {
+          console.log(branchStatus);
+        }
       }
     } catch (error) {
-      console.log(`Error in ${folder}`);
+      console.log(chalk.red(`✗ ${folder}`));
       if (error instanceof ProcessOutput) {
         console.log(error.toString());
       }
