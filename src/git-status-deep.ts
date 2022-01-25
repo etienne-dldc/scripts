@@ -10,7 +10,7 @@ import { $, ProcessOutput } from "./utils/zx";
     "git-branch-status"
   );
 
-  const repos = await findGitRepositories(process.cwd(), (repos) => {});
+  const repos = await findGitRepositories(process.cwd(), (_repos) => {});
   const folders = repos.map((p) => path.dirname(p));
   for await (const folder of folders) {
     $.cwd = folder;
