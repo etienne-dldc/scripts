@@ -14,6 +14,18 @@ import { $, ProcessOutput } from "./utils/zx";
   const folders = repos.map((p) => path.dirname(p));
   for await (const folder of folders) {
     $.cwd = folder;
+    // reset chmod changes
+    // try {
+    //   $.verboseCommand = true;
+    //   $.verboseResult = true;
+    //   await $`git diff --summary | grep --color 'mode change 100644 => 100755' | cut -d' ' -f7- | tr '\\n' '\\0' | xargs -0 chmod -x`;
+    // } catch (error) {
+    //   if (error instanceof ProcessOutput) {
+    //     console.log(error.toString());
+    //   } else {
+    //     console.log(error);
+    //   }
+    // }
     $.verboseCommand = false;
     $.verboseResult = false;
     try {
