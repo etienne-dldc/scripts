@@ -1,9 +1,3 @@
-#!/usr/bin/env node
+#!~/Workspace/github.com/etienne-dldc/scripts/node_modules/.bin/tsx
 
-const path = require("path");
-const prevCwd = process.cwd();
-process.chdir(path.resolve(__dirname, "../"));
-require("esbuild-runner/register");
-process.chdir(prevCwd);
-
-require("../src/" + process.argv[2] + ".ts");
+import("../src/" + process.argv[2] + ".ts").catch(console.error);

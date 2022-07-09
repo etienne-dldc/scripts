@@ -1,43 +1,36 @@
 {
   "name": "scripts",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Personnal scripts",
+  "keywords": [],
+  "homepage": "https://github.com/etienne-dldc/scripts#readme",
+  "bugs": {
+    "url": "https://github.com/etienne-dldc/scripts/issues"
+  },
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/etienne-dldc/scripts.git"
   },
+  "license": "MIT",
+  "author": "Etienne Dldc <e.deladonchamps@gmail.com>",
+  "main": "index.js",
   "bin": {
     "run": "./bin/run"
   },
-  "author": "Etienne Dldc <e.deladonchamps@gmail.com>",
-  "license": "MIT",
-  "description": "Personnal scripts",
-  "bugs": {
-    "url": "https://github.com/etienne-dldc/scripts/issues"
-  },
-  "homepage": "https://github.com/etienne-dldc/scripts#readme",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
   "dependencies": {
-    "@types/git-url-parse": "^9.0.0",
-    "@types/node-fetch": "^2.5.10",
-    "@types/which": "^2.0.0",
-    "arg": "^5.0.0",
-    "chalk": "^4.1.1",
-    "esbuild": "^0.12.1",
-    "esbuild-runner": "^1.3.2",
-    "find-git-repositories": "^0.2.1",
-    "git-url-parse": "^11.4.4",
-    "inquirer": "^8.0.0",
-    "node-fetch": "^2.6.1",
-    "shq": "^1.0.2",
-    "typescript": "^4.2.4",
-    "which": "^2.0.2",
-    "zx": "^1.8.0"
-  },
-  "devDependencies": {
-    "@types/inquirer": "^7.3.1"
+    "@types/git-url-parse": "^9.0.1",
+    "@types/inquirer": "^8.2.1",
+    "arg": "^5.0.2",
+    "chalk": "^5.0.1",
+    "esbuild": "^0.14.48",
+    "fast-glob": "^3.2.11",
+    "git-url-parse": "^12.0.0",
+    "inquirer": "^9.0.0",
+    "tsx": "^3.7.1",
+    "typescript": "^4.7.4",
+    "zx": "^7.0.7"
   }
 }

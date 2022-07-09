@@ -1,94 +1,65 @@
-import findGitRepositories from "find-git-repositories";
+import "zx/globals";
 import path from "path";
 import chalk from "chalk";
-import { $, ProcessOutput } from "./utils/zx";
+import fg from "fast-glob";
+import { gitToPath } from "./utils/gitToPath";
+
+const gitBranchStatusPath = path.resolve(__dirname, "utils", "git-branch-status");
 
 (async () => {
-  const gitBranchStatusPath = path.resolve(
-    __dirname,
-    "utils",
-    "git-branch-status"
-  );
+  const stream = fg.stream("**/.git", { cwd: process.cwd(), onlyDirectories: true, dot: true, followSymbolicLinks: false });
 
-  const repos = await findGitRepositories(process.cwd(), (_repos) => {});
-  const folders = repos.map((p) => path.dirname(p));
-  for await (const folder of folders) {
-    $.cwd = folder;
-    // reset chmod changes
-    // try {
-    //   $.verboseCommand = true;
-    //   $.verboseResult = true;
-    //   await $`git diff --summary | grep --color 'mode change 100644 => 100755' | cut -d' ' -f7- | tr '\\n' '\\0' | xargs -0 chmod -x`;
-    // } catch (error) {
-    //   if (error instanceof ProcessOutput) {
-    //     console.log(error.toString());
-    //   } else {
-    //     console.log(error);
-    //   }
-    // }
-    $.verboseCommand = false;
-    $.verboseResult = false;
+  for await (const entry of stream) {
+    const project = path.dirname(entry as string);
     try {
-      const branchStatus = (await $`bash ${gitBranchStatusPath}`).toString();
-      const changes = (await $`git status -s`).toString();
-      const noChanges = changes.trim().length === 0;
-      const isSync = branchStatus.match(
-        /All tracking branches are synchronized with their upstreams/
-      );
-      if (isSync && noChanges) {
-        console.log(chalk.green(`✓ ${folder}`));
-      } else {
-        console.log(chalk.red(`✗ ${folder}`));
-        if (!noChanges) {
-          console.log(changes);
-        }
-        if (!isSync) {
-          console.log(branchStatus);
-        }
-      }
+      await handleProject(project);
     } catch (error) {
-      console.log(chalk.red(`✗ ${folder}`));
+      console.log(chalk.red(`✗ ./${project}`));
       if (error instanceof ProcessOutput) {
         console.log(error.toString());
+      } else {
+        console.log(error);
       }
     }
-
-    // const branchesNames = (await $`git branch`).toString().split("\n");
-    // const fixedBranchNames: Array<string> = [];
-
-    // branchesNames.forEach((branch) => {
-    //   const match = branch.match(/[^ ]+$/g);
-    //   if (match) {
-    //     fixedBranchNames.push(match[0]);
-    //   }
-    // });
-    // console.log(fixedBranchNames);
-
-    // const branchInfos: Array<{
-    //   lastCommitDate: string;
-    //   commitCount: number;
-    //   branchName: string;
-    //   authorName: string;
-    // }> = [];
-
-    // for (let i = 0; i < fixedBranchNames.length; i++) {
-    //   const branch = fixedBranchNames[i];
-    //   const lastCommitDate = (
-    //     await $`git log -1 --format=%cd ${branch}`
-    //   ).toString();
-    //   const commitCount = (await $`git rev-list --count ${branch}`).toString();
-    //   const authorName = (
-    //     await $`git log -1 --format=%an ${branch}`
-    //   ).toString();
-
-    //   branchInfos.push({
-    //     branchName: branch,
-    //     authorName: authorName.replace("\n", ""),
-    //     lastCommitDate: lastCommitDate.replace("\n", ""),
-    //     commitCount: parseInt(commitCount.replace("\n", ""), 10),
-    //   });
-    // }
-
-    // console.table(branchInfos);
   }
 })();
+
+async function getOrigin() {
+  try {
+    return (await $`git config --get remote.origin.url`).toString();
+  } catch (error) {
+    return null;
+  }
+}
+
+async function handleProject(projectPath: string) {
+  const folder = path.resolve(process.cwd(), projectPath);
+  $.verbose = false;
+  $.cwd = folder;
+  const origin = await getOrigin();
+  if (origin === null) {
+    console.log(chalk.green(`? ./${projectPath}`));
+    return;
+  }
+  const expectedDir = gitToPath(origin);
+  if (expectedDir !== projectPath) {
+    console.log(chalk.red(`! ./${projectPath}`));
+    console.log(chalk.grey(`Should be in ./${expectedDir}`));
+    return;
+  }
+  const branchStatus = (await $`bash ${gitBranchStatusPath}`).toString();
+  const changes = (await $`git status -s`).toString();
+  const noChanges = changes.trim().length === 0;
+  const isSync = branchStatus.match(/All tracking branches are synchronized with their upstreams/);
+  if (isSync && noChanges) {
+    console.log(chalk.green(`✓ ./${projectPath}`));
+  } else {
+    console.log(chalk.red(`✗ ./${projectPath}`));
+    if (!noChanges) {
+      console.log(chalk.red(`${changes.split("\n").length} changes`));
+    }
+    if (!isSync) {
+      console.log(branchStatus);
+    }
+  }
+}
