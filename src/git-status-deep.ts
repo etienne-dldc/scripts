@@ -26,7 +26,7 @@ const gitBranchStatusPath = path.resolve(__dirname, "utils", "git-branch-status"
 
 async function getOrigin() {
   try {
-    return (await $`git config --get remote.origin.url`).toString();
+    return (await $`git config --get remote.origin.url`).toString().trim();
   } catch (error) {
     return null;
   }
@@ -38,13 +38,13 @@ async function handleProject(projectPath: string) {
   $.cwd = folder;
   const origin = await getOrigin();
   if (origin === null) {
-    console.log(chalk.green(`? ./${projectPath}`));
+    console.log(chalk.blue(`? ./${projectPath}`));
     return;
   }
   const expectedDir = gitToPath(origin);
   if (expectedDir !== projectPath) {
     console.log(chalk.red(`! ./${projectPath}`));
-    console.log(chalk.grey(`Should be in ./${expectedDir}`));
+    console.log(chalk.red(`Should be in ./${expectedDir}`));
     return;
   }
   const branchStatus = (await $`bash ${gitBranchStatusPath}`).toString();

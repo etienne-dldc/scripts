@@ -15,22 +15,22 @@
   "author": "Etienne Dldc <e.deladonchamps@gmail.com>",
   "main": "index.js",
   "bin": {
-    "run": "./bin/run"
+    "run": "./bin/run.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "@types/git-url-parse": "^9.0.1",
-    "@types/inquirer": "^8.2.1",
+    "@types/inquirer": "^9.0.3",
     "arg": "^5.0.2",
-    "chalk": "^5.0.1",
-    "esbuild": "^0.14.48",
-    "fast-glob": "^3.2.11",
-    "git-url-parse": "^12.0.0",
-    "inquirer": "^9.0.0",
-    "tsx": "^3.7.1",
-    "typescript": "^4.7.4",
-    "zx": "^7.0.7"
+    "chalk": "^5.2.0",
+    "esbuild": "^0.17.19",
+    "fast-glob": "^3.2.12",
+    "git-url-parse": "^13.1.0",
+    "inquirer": "^9.2.2",
+    "tsx": "^3.12.7",
+    "typescript": "^5.0.4",
+    "zx": "^7.2.2"
   }
 }
