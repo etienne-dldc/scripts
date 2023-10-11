@@ -5,6 +5,7 @@ export function gitToPath(repo: string) {
   if (parsed.protocol !== "ssh") {
     throw new Error(`Use ssh ! (found ${parsed.protocol})`);
   }
+  const source = parsed.source === "github.com-etienne-dldc" ? "github.com" : parsed.source;
 
-  return `${parsed.source}/${parsed.organization}/${parsed.name}`;
+  return `${source}/${parsed.organization}/${parsed.name}`;
 }
