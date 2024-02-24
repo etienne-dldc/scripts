@@ -1,9 +1,9 @@
-import "zx/globals";
 import arg from "arg";
+import chalk from "chalk";
+import fs from "fs";
 import inquirer from "inquirer";
 import path from "path";
-import fs from "fs";
-import chalk from "chalk";
+import "zx/globals";
 import { gitToPath } from "./utils/gitToPath";
 
 (async () => {
