@@ -7,7 +7,14 @@ import "zx/globals";
 import { gitToPath } from "./utils/gitToPath";
 
 (async () => {
-  const args = arg({}, { argv: process.argv.slice(3) });
+  const args = arg(
+    {
+      "--insiders": Boolean,
+    },
+    { argv: process.argv.slice(3) }
+  );
+
+  const isInsiders = args["--insiders"];
 
   let repo: string = args._[0];
   if (!repo) {
@@ -26,6 +33,10 @@ import { gitToPath } from "./utils/gitToPath";
     $.cwd = targetPath;
     await $`git pull`;
     console.log(`${chalk.green("✔︎")} Pulled`);
+  }
+  if (isInsiders) {
+    await $`code-insiders ${targetPath}`;
+    return;
   }
   await $`code ${targetPath}`;
 })().catch(console.error);
